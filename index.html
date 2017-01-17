@@ -1,0 +1,120 @@
+<!DOCTYPE html> <html xmlns="http://www.w3.org/1999/xhtml"> <head> <meta charset="utf-8"/> <title>Cl-Gpio</title> <meta name="viewport" content="width=device-width"/> <meta name="description" content="A library for the Linux GPIO kernel module as used on hobby kits such as the Raspberry Pi"/> <meta name="author" content="Nicolas Hafner &lt;shinmera@tymoon.eu&gt;"/> <style type="text/css"> body{
+          max-width: 1024px;
+          margin: 0 auto 0 auto;
+          font-family: sans-serif;
+          color: #333333;
+          font-size: 14pt;
+          padding: 5px;
+      }
+      body>header{
+          display:flex;
+          align-items: center;
+          justify-content: center;
+          flex-direction: column;
+          max-width: 100%;
+          text-align: center;
+      }
+      body>header img{
+          max-width: 50%;
+      }
+      img{
+          max-width: 100%;
+          max-height: 100%;
+      }
+      code{
+          font-family: Consolas, Inconsolata, monospace;
+      }
+      a{
+          text-decoration: none;
+          color: #0055AA;
+      }
+      a img{
+          border: none;
+      }
+      #documentation{
+          text-align: justify;
+      }
+      #documentation pre{
+          margin-left: 20px;
+          overflow: auto;
+      }
+      #documentation img{
+          margin: 5px;
+      }
+      #symbol-index>ul{
+          list-style: none;
+          padding: 0;
+      }
+      #symbol-index .package>ul{
+          list-style: none;
+          padding: 0 0 0 10px;
+      }
+      #symbol-index .package .nicknames{
+          font-weight: normal;
+      }
+      #symbol-index .package h4{
+          display: inline-block;
+          margin: 0;
+      }
+      #symbol-index .package article{
+          margin: 0 0 15px 0;
+      }
+      #symbol-index .package article header{
+          font-size: 1.2em;
+          font-weight: normal;
+      }
+      #symbol-index .package .name{
+          margin-right: 5px;
+      }
+      #symbol-index .package .docstring{
+          margin: 0 0 0 15px;
+          white-space: pre-wrap;
+          font-size: 12pt;
+      }
+      @media (max-width: 800px){
+          body{font-size: 12pt;}
+      } </style> </head> <body> <header> <h1>cl-gpio</h1> <span class="version">1.0.0</span> <p class="description">A library for the Linux GPIO kernel module as used on hobby kits such as the Raspberry Pi</p> </header> <main> <article id="documentation">  <div><h2>About cl-gpio</h2> <p>This is a bindings library for the Linux GPIO kernel module as described on <a href="https://www.kernel.org/doc/Documentation/gpio/sysfs.txt">https://www.kernel.org/doc/Documentation/gpio/sysfs.txt</a>. It provides both primitive access and more sophisticated constructs to work with interrupts and such.</p> <h2>How To</h2> <p>Enumerate a list of all available GPIO pins on your system:</p> <pre><code>(<a href="#CL-GPIO:AVAILABLE-PINS">gpio:available-pins</a>)
+</code></pre> <p>The pins must be exported for use first:</p> <pre><code>(<a href="#CL-GPIO:EXPORT-PIN">gpio:export-pin</a> 0 1 2)
+</code></pre> <p>You can then access the direction, value, edge, and active-low of each pin:</p> <pre><code>(<a href="http://l1sp.org/cl/setf">setf</a> (<a href="#CL-GPIO:DIRECTION">gpio:direction</a> 0) :out)
+(<a href="#CL-GPIO:VALUE">gpio:value</a> 0)
+</code></pre> <p>On SBCL you can also wait for values:</p> <pre><code>(<a href="http://l1sp.org/cl/progn">progn</a> (<a href="#CL-GPIO:AWAIT-VALUE">gpio:await-value</a> 0)
+       (<a href="http://l1sp.org/cl/format">format</a> T &quot;Whoah, 0's edge is ~a to ~:[0~;1~]&quot; (<a href="#CL-GPIO:EDGE">edge</a> 0) (<a href="#CL-GPIO:VALUE">value</a> 0)))
+</code></pre> <p>Or even install handlers:</p> <pre><code>(<a href="#CL-GPIO:WITH-PIN-HANDLER">gpio:with-pin-handler</a> (#'print 0 :falling)
+  (<a href="http://l1sp.org/cl/format">format</a> T &quot;Waiting for a change on 0...&quot;)
+  (<a href="http://l1sp.org/cl/loop">loop</a> (<a href="http://l1sp.org/cl/sleep">sleep</a> 0.001)))
+</code></pre> <p>Naturally you'll have to refer to your particular board/system's specification to be able to tell which pins are supposed to be used for what. For the Raspberry Pi 2/3, it would be:</p> <p><img src="https://az835927.vo.msecnd.net/sites/iot/Resources/images/PinMappings/RP2_Pinout.png" alt="rpi23-pin-mapping"/></p> <p>(<a href="https://developer.microsoft.com/en-us/windows/iot/docs/pinmappingsrpi">Source</a>)</p> </div>  </article> <article id="copyright">  <h2>Copyright</h2> <span>cl-gpio</span> is licensed under the <span><a href="https://tldrlegal.com/search?q=Artistic">Artistic</a></span> license.  © <span>Nicolas Hafner &lt;shinmera@tymoon.eu&gt;</span> .  This library can be obtained on <a href="https://github.com/Shinmera/cl-gpio">https://github.com/Shinmera/cl-gpio</a>.  </article>  <article id="symbol-index"> <h2>Package Index</h2> <ul><li class="package"> <h3> <a name="CL-GPIO" href="#CL-GPIO">CL-GPIO</a> <span class="nicknames">(GPIO ORG.SHIRAKUMO.GPIO)</span> </h3> <ul><li> <a name="CL-GPIO:*GPIO-ROOT*"> </a> <article> <header class="special"> <span class="type">special</span>  <h4 class="name"><code><a href="#CL-GPIO:*GPIO-ROOT*">*GPIO-ROOT*</a></code></h4>  </header> <pre class="docstring">The root directory of the GPIO system devices.
+Should be /sys/class/gpio/</pre> </article> </li><li> <a name="CL-GPIO:ACTIVE-LOW"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#CL-GPIO:ACTIVE-LOW">ACTIVE-LOW</a></code></h4> <code class="qualifiers"></code> <code class="arguments">PIN</code><code>)</code>  </header> <pre class="docstring">Accessor to whether the GPIO pin has an active low.
+
+The value should be either NIL or T.</pre> </article> </li><li> <a name="CL-GPIO:DIRECTION"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#CL-GPIO:DIRECTION">DIRECTION</a></code></h4> <code class="qualifiers"></code> <code class="arguments">PIN</code><code>)</code>  </header> <pre class="docstring">Accessor to the GPIO pin's direction.
+
+The value should be either :IN or :OUT.</pre> </article> </li><li> <a name="CL-GPIO:EDGE"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#CL-GPIO:EDGE">EDGE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">PIN</code><code>)</code>  </header> <pre class="docstring">Accessor to the GPIO pin's interrupt edge.
+
+The value should be one of :NONE :RISING :FALLING :BOTH</pre> </article> </li><li> <a name="CL-GPIO:VALUE"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#CL-GPIO:VALUE">VALUE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">PIN</code><code>)</code>  </header> <pre class="docstring">Accessor to the GPIO pin's value.
+
+When reading, the pin's direction should be :IN
+When setting, the pin's direction should be :OUT
+
+The value should be either NIL or T.</pre> </article> </li><li> <a name="CL-GPIO:AVAILABLE-PINS"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#CL-GPIO:AVAILABLE-PINS">AVAILABLE-PINS</a></code></h4> <code class="qualifiers"></code> <code class="arguments"></code><code>)</code>  </header> <pre class="docstring">Return a list of all available GPIO pins on the system.
+
+Note that the pins are not necessarily accessible;
+they may need to be exported first.</pre> </article> </li><li> <a name="CL-GPIO:AWAIT-VALUE"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#CL-GPIO:AWAIT-VALUE">AWAIT-VALUE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">PIN &amp;OPTIONAL TIMEOUT</code><code>)</code>  </header> <pre class="docstring">Wait until the pin has a value that we can read.
+
+If TIMEOUT is specified and reached before a value becomes
+accessible, NIL is returned. Otherwise, true is returned.
+
+This function is available on the following implementations:
+ * SBCL</pre> </article> </li><li> <a name="CL-GPIO:BASE"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#CL-GPIO:BASE">BASE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">CHIP</code><code>)</code>  </header> <pre class="docstring">Return the GPIO chip's base pin number.</pre> </article> </li><li> <a name="CL-GPIO:CALL-WITH-PIN-HANDLER"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#CL-GPIO:CALL-WITH-PIN-HANDLER">CALL-WITH-PIN-HANDLER</a></code></h4> <code class="qualifiers"></code> <code class="arguments">FUNCTION HANDLER PIN &amp;OPTIONAL EDGE ACTIVE-LOW</code><code>)</code>  </header> <pre class="docstring">Make the HANDLER function be called if the PIN changes value during the evaluation of FUNCTION.
+
+This function is available on the following implementations:
+ * SBCL
+
+See EDGE
+See ACTIVE-LOW</pre> </article> </li><li> <a name="CL-GPIO:CHIP-FILE"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#CL-GPIO:CHIP-FILE">CHIP-FILE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">CHIP SUB</code><code>)</code>  </header> <pre class="docstring">Returns a file for the specified GPIO chip.
+
+See GPIO-FILE</pre> </article> </li><li> <a name="CL-GPIO:CHIP-PINS"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#CL-GPIO:CHIP-PINS">CHIP-PINS</a></code></h4> <code class="qualifiers"></code> <code class="arguments">CHIP</code><code>)</code>  </header> <pre class="docstring">Return a list of GPIO pin numbers on the chip.</pre> </article> </li><li> <a name="CL-GPIO:CHIPS"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#CL-GPIO:CHIPS">CHIPS</a></code></h4> <code class="qualifiers"></code> <code class="arguments"></code><code>)</code>  </header> <pre class="docstring">Returns a list of known GPIO chips.</pre> </article> </li><li> <a name="CL-GPIO:EXPORT-PIN"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#CL-GPIO:EXPORT-PIN">EXPORT-PIN</a></code></h4> <code class="qualifiers"></code> <code class="arguments">&amp;REST PINS</code><code>)</code>  </header> <pre class="docstring">Export the specified pins so that they may be accessed from userspace.</pre> </article> </li><li> <a name="CL-GPIO:EXPORTED-PINS"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#CL-GPIO:EXPORTED-PINS">EXPORTED-PINS</a></code></h4> <code class="qualifiers"></code> <code class="arguments"></code><code>)</code>  </header> <pre class="docstring">Returns a list of GPIO pins that are accessible.</pre> </article> </li><li> <a name="CL-GPIO:GPIO-FILE"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#CL-GPIO:GPIO-FILE">GPIO-FILE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">SUB</code><code>)</code>  </header> <pre class="docstring">Returns an absolute path to the requested gpio file.
+
+See *GPIO-ROOT*</pre> </article> </li><li> <a name="CL-GPIO:LABEL"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#CL-GPIO:LABEL">LABEL</a></code></h4> <code class="qualifiers"></code> <code class="arguments">CHIP</code><code>)</code>  </header> <pre class="docstring">Return the GPIO chip's label.</pre> </article> </li><li> <a name="CL-GPIO:NGPIO"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#CL-GPIO:NGPIO">NGPIO</a></code></h4> <code class="qualifiers"></code> <code class="arguments">CHIP</code><code>)</code>  </header> <pre class="docstring">Return the number of GPIO pins on the chip.</pre> </article> </li><li> <a name="CL-GPIO:PIN-FILE"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#CL-GPIO:PIN-FILE">PIN-FILE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">PIN SUB</code><code>)</code>  </header> <pre class="docstring">Returns a file for the specified GPIO pin.
+
+See GPIO-FILE</pre> </article> </li><li> <a name="CL-GPIO:UNEXPORT-PIN"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#CL-GPIO:UNEXPORT-PIN">UNEXPORT-PIN</a></code></h4> <code class="qualifiers"></code> <code class="arguments">&amp;REST PINS</code><code>)</code>  </header> <pre class="docstring">Unexport the specified pins so that they can no longer be accessed from userspace.</pre> </article> </li><li> <a name="CL-GPIO:WITH-PIN-HANDLER"> </a> <article> <header class="macro"> <span class="type">macro</span>  <code>(</code><h4 class="name"><code><a href="#CL-GPIO:WITH-PIN-HANDLER">WITH-PIN-HANDLER</a></code></h4> <code class="qualifiers"></code> <code class="arguments">&amp;REST ARGS</code><code>)</code>  </header> <pre class="docstring">Shorthand to call a handler function on PIN value change during the evaluation of BODY.
+g
+See CALL-WITH-PIN-HANDLER</pre> </article> </li></ul> </li></ul> </article>  </main> </body> </html> 
