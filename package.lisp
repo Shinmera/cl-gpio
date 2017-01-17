@@ -30,4 +30,5 @@
   ;; wrapper.lisp
   (:export
    #:await-value
+   #:call-with-pin-handler
    #:with-pin-handler))

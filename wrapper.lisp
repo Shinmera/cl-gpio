@@ -22,7 +22,6 @@
       (sb-sys:with-fd-handler ((sb-sys:fd-stream-fd fd) :input #'helper)
                               (funcall function)))))
 
-#+sbcl
 (defmacro with-pin-handler ((handler pin &optional edge active-low) &body body)
   `(call-with-pin-handler
     (lambda () ,@body)
