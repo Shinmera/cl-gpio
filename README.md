@@ -4,16 +4,17 @@ This is a bindings library for the Linux GPIO kernel module as described on <htt
 ## How To
 Enumerate a list of all available GPIO pins on your system:
 
-    (gpio:available-pins)
+    (gpio:pins)
 
-The pins must be exported for use first:
-
-    (gpio:export-pin 0 1 2)
-
-You can then access the direction, value, edge, and active-low of each pin:
+You can then access the direction, edge, and active-low of each pin:
 
     (setf (gpio:direction 0) :out)
+    (gpio:active-low 0)
+
+If you try to read or set a PIN's value, its direction is automatically adjusted as necessary:
+
     (gpio:value 0)
+    (setf (gpio:value 0) T)
 
 On SBCL you can also wait for values:
 
@@ -22,7 +23,9 @@ On SBCL you can also wait for values:
 
 Or even install handlers:
 
-    (gpio:with-pin-handler (#'print 0 :falling)
+    (defun pin-value-handler (pin value)
+      (format T "~& ~a changed value to ~a." pin value))
+    (gpio:with-pin-handler (#'pin-value-handler 0 :falling)
       (format T "Waiting for a change on 0...")
       (loop (sleep 0.001)))
 

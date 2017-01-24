@@ -1,5 +1,5 @@
 #|
- This file is a part of cl-gamepad
+ This file is a part of cl-gpio
  (c) 2016 Shirakumo http://tymoon.eu (shinmera@tymoon.eu)
  Author: Nicolas Hafner <shinmera@tymoon.eu>
 |#

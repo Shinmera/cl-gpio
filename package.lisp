@@ -1,12 +1,12 @@
 #|
- This file is a part of cl-gamepad
+ This file is a part of cl-gpio
  (c) 2016 Shirakumo http://tymoon.eu (shinmera@tymoon.eu)
  Author: Nicolas Hafner <shinmera@tymoon.eu>
 |#
 
 (in-package #:cl-user)
-(defpackage #:cl-gpio
-  (:nicknames #:org.shirakumo.gpio #:gpio)
+(defpackage #:cl-gpio-lli
+  (:nicknames #:org.shirakumo.gpio.lli)
   (:use #:cl)
   ;; low-level.lisp
   (:export
@@ -26,9 +26,26 @@
    #:direction
    #:value
    #:edge
-   #:active-low)
+   #:active-low))
+
+(defpackage #:cl-gpio
+  (:nicknames #:org.shirakumo.gpio #:gpio)
+  (:use #:cl)
+  (:shadow #:export #:unexport)
   ;; wrapper.lisp
   (:export
+   #:pin
+   #:ensure-pin
+   #:pins
+   #:all-pins
+   #:export
+   #:unexport
+   #:name
+   #:chip
+   #:direction
+   #:edge
+   #:active-low
+   #:value
    #:await-value
    #:call-with-pin-handler
    #:with-pin-handler))
