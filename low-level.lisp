@@ -105,7 +105,8 @@
                   collect `((,value) ,string)))
         (typecase pin
           (stream pin)
-          (T (pin-file pin ,file)))))))
+          (T (pin-file pin ,file))))
+       value)))
 
 (define-pin-accessor direction "direction"
   ("in" :in)
