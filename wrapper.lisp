@@ -28,8 +28,8 @@
   (unless (probe-file (cl-gpio-lli:pin-file pin ""))
     (error "No such pin ~d." pin))
   (%make-pin :name pin
-             :chip (dolist (chip (cl-gpio-lli:chips))
-                     (when (<= 0 (- pin (cl-gpio-lli:base chip)) (cl-gpio-lli:ngpio pin))
+             :chip (dolist (chip (cl-gpio-lli:chips) (princ-to-string chip))
+                     (when (<= 0 (- pin (cl-gpio-lli:base chip)) (cl-gpio-lli:ngpio chip))
                        (return (cl-gpio-lli:label chip))))
              :direction (cl-gpio-lli:direction pin)
              :edge (cl-gpio-lli:edge pin)
