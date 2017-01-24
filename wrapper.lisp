@@ -82,7 +82,7 @@
     (cond ((eql direction (pin-direction pin))
            direction)
           (T
-           (setf (cl-gpio-lli:direction pin) direction)
+           (setf (cl-gpio-lli:direction (pin-name pin)) direction)
            (setf (pin-direction pin) direction)))))
 
 (defun (setf edge) (edge pin)
@@ -90,7 +90,7 @@
     (cond ((eql edge (pin-edge pin))
            edge)
           (T
-           (setf (cl-gpio-lli:edge pin) edge)
+           (setf (cl-gpio-lli:edge (pin-name pin)) edge)
            (setf (pin-edge pin) edge)))))
 
 (defun (setf active-low) (active-low pin)
@@ -98,7 +98,7 @@
     (cond ((eql active-low (pin-active-low pin))
            active-low)
           (T
-           (setf (cl-gpio-lli:active-low pin) active-low)
+           (setf (cl-gpio-lli:active-low (pin-name pin)) active-low)
            (setf (pin-active-low pin) active-low)))))
 
 (defun value (pin)
