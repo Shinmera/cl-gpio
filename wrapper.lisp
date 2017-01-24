@@ -23,7 +23,8 @@
     (format NIL "~d ~s" (pin-name pin) (pin-direction pin))))
 
 (defun make-pin (pin)
-  (cl-gpio-lli:export-pin pin)
+  (unless (probe-file (cl-gpio-lli:pin-file pin ""))
+    (cl-gpio-lli:export-pin pin))
   (unless (probe-file (cl-gpio-lli:pin-file pin ""))
     (error "No such pin ~d." pin))
   (%make-pin :name pin
