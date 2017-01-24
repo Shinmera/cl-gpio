@@ -51,7 +51,7 @@
   (mapcar #'ensure-pin (cl-gpio-lli:available-pins)))
 
 (defun export (&rest pins)
-  (mapcar #'ensure-pin (apply #'cl-gpio-lli:export-pin pins)))
+  (mapcar #'ensure-pin pins))
 
 (defun unexport (&rest pins)
   (dolist (pin pins)
