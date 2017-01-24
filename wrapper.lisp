@@ -20,7 +20,7 @@
 
 (defmethod print-object ((pin pin) stream)
   (print-unreadable-object (pin stream :type T)
-    (format NIL "~d ~s" (pin-name pin) (pin-direction pin))))
+    (format stream "~d ~s" (pin-name pin) (pin-direction pin))))
 
 (defun make-pin (pin)
   (unless (probe-file (cl-gpio-lli:pin-file pin ""))
