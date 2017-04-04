@@ -74,67 +74,88 @@
       @media (max-width: 800px){
           body{font-size: 12pt;}
       } </style> </head> <body> <header> <h1>cl-gpio</h1> <span class="version">1.0.0</span> <p class="description">A library for the Linux GPIO kernel module as used on hobby kits such as the Raspberry Pi</p> </header> <main> <article id="documentation">  <div><h2>About cl-gpio</h2> <p>This is a bindings library for the Linux GPIO kernel module as described on <a href="https://www.kernel.org/doc/Documentation/gpio/sysfs.txt">https://www.kernel.org/doc/Documentation/gpio/sysfs.txt</a>. It provides both primitive access and more sophisticated constructs to work with interrupts and such.</p> <h2>How To</h2> <p>Enumerate a list of all available GPIO pins on your system:</p> <pre><code>(<a href="#CL-GPIO:PINS">gpio:pins</a>)
-</code></pre> <p>You can then access the direction, edge, and active-low of each pin:</p> <pre><code>(<a href="http://l1sp.org/cl/setf">setf</a> (<a href="#CL-GPIO:DIRECTION">gpio:direction</a> 0) :out)
-(<a href="#CL-GPIO:ACTIVE-LOW">gpio:active-low</a> 0)
-</code></pre> <p>If you try to read or set a PIN's value, its direction is automatically adjusted as necessary:</p> <pre><code>(<a href="#CL-GPIO:VALUE">gpio:value</a> 0)
-(<a href="http://l1sp.org/cl/setf">setf</a> (<a href="#CL-GPIO:VALUE">gpio:value</a> 0) T)
+</code></pre> <p>You can then access the direction, edge, and active-low of each pin:</p> <pre><code>(<a href="http://l1sp.org/cl/setf">setf</a> (<a href="#CL-GPIO-LLI:DIRECTION">gpio:direction</a> 0) :out)
+(<a href="#CL-GPIO-LLI:ACTIVE-LOW">gpio:active-low</a> 0)
+</code></pre> <p>If you try to read or set a PIN's value, its direction is automatically adjusted as necessary:</p> <pre><code>(<a href="#CL-GPIO-LLI:VALUE">gpio:value</a> 0)
+(<a href="http://l1sp.org/cl/setf">setf</a> (<a href="#CL-GPIO-LLI:VALUE">gpio:value</a> 0) T)
 </code></pre> <p>On SBCL you can also wait for values:</p> <pre><code>(<a href="http://l1sp.org/cl/progn">progn</a> (<a href="#CL-GPIO:AWAIT-VALUE">gpio:await-value</a> 0)
-       (<a href="http://l1sp.org/cl/format">format</a> T &quot;Whoah, 0's edge is ~a to ~:[0~;1~]&quot; (<a href="#CL-GPIO:EDGE">edge</a> 0) (<a href="#CL-GPIO:VALUE">value</a> 0)))
+       (<a href="http://l1sp.org/cl/format">format</a> T &quot;Whoah, 0's edge is ~a to ~:[0~;1~]&quot; (<a href="#CL-GPIO-LLI:EDGE">edge</a> 0) (<a href="#CL-GPIO-LLI:VALUE">value</a> 0)))
 </code></pre> <p>Or even install handlers:</p> <pre><code>(<a href="http://l1sp.org/cl/defun">defun</a> pin-value-handler (<a href="#CL-GPIO:PIN">pin</a> value)
   (<a href="http://l1sp.org/cl/format">format</a> T &quot;~&amp; ~a changed value to ~a.&quot; pin value))
 (<a href="#CL-GPIO:WITH-PIN-HANDLER">gpio:with-pin-handler</a> (#'pin-value-handler 0 :falling)
   (<a href="http://l1sp.org/cl/format">format</a> T &quot;Waiting for a change on 0...&quot;)
   (<a href="http://l1sp.org/cl/loop">loop</a> (<a href="http://l1sp.org/cl/sleep">sleep</a> 0.001)))
-</code></pre> <p>Naturally you'll have to refer to your particular board/system's specification to be able to tell which pins are supposed to be used for what. For the Raspberry Pi 2/3, it would be:</p> <p><img src="https://az835927.vo.msecnd.net/sites/iot/Resources/images/PinMappings/RP2_Pinout.png" alt="rpi23-pin-mapping"/></p> <p>(<a href="https://developer.microsoft.com/en-us/windows/iot/docs/pinmappingsrpi">Source</a>)</p> </div>  </article> <article id="copyright">  <h2>Copyright</h2> <span>cl-gpio</span> is licensed under the <span><a href="https://tldrlegal.com/search?q=Artistic">Artistic</a></span> license.  © <span>Nicolas Hafner &lt;shinmera@tymoon.eu&gt;</span> .  This library can be obtained on <a href="https://github.com/Shinmera/cl-gpio">https://github.com/Shinmera/cl-gpio</a>.  </article>  <article id="symbol-index"> <h2>Package Index</h2> <ul><li class="package"> <h3> <a name="CL-GPIO" href="#CL-GPIO">CL-GPIO</a> <span class="nicknames">(GPIO ORG.SHIRAKUMO.GPIO)</span> </h3> <ul><li> <a name="CL-GPIO:PIN"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#CL-GPIO:PIN">PIN</a></code></h4>  </header> <pre class="docstring">Representative type to encapsulate a GPIO pin.
+</code></pre> <p>Naturally you'll have to refer to your particular board/system's specification to be able to tell which pins are supposed to be used for what. For the Raspberry Pi 2/3, it would be:</p> <p><img src="https://az835927.vo.msecnd.net/sites/iot/Resources/images/PinMappings/RP2_Pinout.png" alt="rpi23-pin-mapping"/></p> <p>(<a href="https://developer.microsoft.com/en-us/windows/iot/docs/pinmappingsrpi">Source</a>)</p> </div>  </article> <article id="copyright">  <h2>Copyright</h2> <span>cl-gpio</span> is licensed under the <span><a href="https://tldrlegal.com/search?q=Artistic">Artistic</a></span> license.  © <span>Nicolas Hafner &lt;shinmera@tymoon.eu&gt;</span> .  This library can be obtained on <a href="https://github.com/Shinmera/cl-gpio">https://github.com/Shinmera/cl-gpio</a>.  </article>  <article id="symbol-index"> <h2>Package Index</h2> <ul><li class="package"> <h3> <a name="CL-GPIO-LLI" href="#CL-GPIO-LLI">CL-GPIO-LLI</a> <span class="nicknames">(ORG.SHIRAKUMO.GPIO.LLI)</span> </h3> <ul><li> <a name="CL-GPIO-LLI:*GPIO-ROOT*"> </a> <article> <header class="special"> <span class="type">special</span>  <h4 class="name"><code><a href="#CL-GPIO-LLI:*GPIO-ROOT*">*GPIO-ROOT*</a></code></h4>  </header> <div class="docstring"><pre>The root directory of the GPIO system devices.
+Should be /sys/class/gpio/</pre></div> </article> </li><li> <a name="CL-GPIO-LLI:ACTIVE-LOW"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#CL-GPIO-LLI:ACTIVE-LOW">ACTIVE-LOW</a></code></h4> <code class="qualifiers"></code> <code class="arguments">PIN</code><code>)</code>  </header> <div class="docstring"><pre>Accessor to whether the GPIO pin has an active low.
+
+The value should be either NIL or T.</pre></div> </article> </li><li> <a name="CL-GPIO-LLI:DIRECTION"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#CL-GPIO-LLI:DIRECTION">DIRECTION</a></code></h4> <code class="qualifiers"></code> <code class="arguments">PIN</code><code>)</code>  </header> <div class="docstring"><pre>Accessor to the GPIO pin's direction.
+
+The value should be either :IN or :OUT.</pre></div> </article> </li><li> <a name="CL-GPIO-LLI:EDGE"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#CL-GPIO-LLI:EDGE">EDGE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">PIN</code><code>)</code>  </header> <div class="docstring"><pre>Accessor to the GPIO pin's interrupt edge.
+
+The value should be one of :NONE :RISING :FALLING :BOTH</pre></div> </article> </li><li> <a name="CL-GPIO-LLI:VALUE"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#CL-GPIO-LLI:VALUE">VALUE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">PIN</code><code>)</code>  </header> <div class="docstring"><pre>Accessor to the GPIO pin's value.
+
+When reading, the pin's direction should be :IN
+When setting, the pin's direction should be :OUT
+
+The value should be either NIL or T.</pre></div> </article> </li><li> <a name="CL-GPIO-LLI:AVAILABLE-PINS"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#CL-GPIO-LLI:AVAILABLE-PINS">AVAILABLE-PINS</a></code></h4> <code class="qualifiers"></code> <code class="arguments"></code><code>)</code>  </header> <div class="docstring"><pre>Return a list of all available GPIO pins on the system.
+
+Note that the pins are not necessarily accessible;
+they may need to be exported first.</pre></div> </article> </li><li> <a name="CL-GPIO-LLI:BASE"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#CL-GPIO-LLI:BASE">BASE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">CHIP</code><code>)</code>  </header> <div class="docstring"><pre>Return the GPIO chip's base pin number.</pre></div> </article> </li><li> <a name="CL-GPIO-LLI:CHIP-FILE"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#CL-GPIO-LLI:CHIP-FILE">CHIP-FILE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">CHIP SUB</code><code>)</code>  </header> <div class="docstring"><pre>Returns a file for the specified GPIO chip.
+
+See <a href="#CL-GPIO-LLI:GPIO-FILE">GPIO-FILE</a></pre></div> </article> </li><li> <a name="CL-GPIO-LLI:CHIP-PINS"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#CL-GPIO-LLI:CHIP-PINS">CHIP-PINS</a></code></h4> <code class="qualifiers"></code> <code class="arguments">CHIP</code><code>)</code>  </header> <div class="docstring"><pre>Return a list of GPIO pin numbers on the chip.</pre></div> </article> </li><li> <a name="CL-GPIO-LLI:CHIPS"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#CL-GPIO-LLI:CHIPS">CHIPS</a></code></h4> <code class="qualifiers"></code> <code class="arguments"></code><code>)</code>  </header> <div class="docstring"><pre>Returns a list of known GPIO chips.</pre></div> </article> </li><li> <a name="CL-GPIO-LLI:EXPORT-PIN"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#CL-GPIO-LLI:EXPORT-PIN">EXPORT-PIN</a></code></h4> <code class="qualifiers"></code> <code class="arguments">&amp;REST PINS</code><code>)</code>  </header> <div class="docstring"><pre>Export the specified pins so that they may be accessed from userspace.</pre></div> </article> </li><li> <a name="CL-GPIO-LLI:EXPORTED-PINS"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#CL-GPIO-LLI:EXPORTED-PINS">EXPORTED-PINS</a></code></h4> <code class="qualifiers"></code> <code class="arguments"></code><code>)</code>  </header> <div class="docstring"><pre>Returns a list of GPIO pins that are accessible.</pre></div> </article> </li><li> <a name="CL-GPIO-LLI:GPIO-FILE"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#CL-GPIO-LLI:GPIO-FILE">GPIO-FILE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">SUB</code><code>)</code>  </header> <div class="docstring"><pre>Returns an absolute path to the requested gpio file.
+
+See <a href="#CL-GPIO-LLI:*GPIO-ROOT*">*GPIO-ROOT*</a></pre></div> </article> </li><li> <a name="CL-GPIO-LLI:LABEL"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#CL-GPIO-LLI:LABEL">LABEL</a></code></h4> <code class="qualifiers"></code> <code class="arguments">CHIP</code><code>)</code>  </header> <div class="docstring"><pre>Return the GPIO chip's label.</pre></div> </article> </li><li> <a name="CL-GPIO-LLI:NGPIO"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#CL-GPIO-LLI:NGPIO">NGPIO</a></code></h4> <code class="qualifiers"></code> <code class="arguments">CHIP</code><code>)</code>  </header> <div class="docstring"><pre>Return the number of GPIO pins on the chip.</pre></div> </article> </li><li> <a name="CL-GPIO-LLI:PIN-FILE"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#CL-GPIO-LLI:PIN-FILE">PIN-FILE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">PIN SUB</code><code>)</code>  </header> <div class="docstring"><pre>Returns a file for the specified GPIO pin.
+
+See <a href="#CL-GPIO-LLI:GPIO-FILE">GPIO-FILE</a></pre></div> </article> </li><li> <a name="CL-GPIO-LLI:UNEXPORT-PIN"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#CL-GPIO-LLI:UNEXPORT-PIN">UNEXPORT-PIN</a></code></h4> <code class="qualifiers"></code> <code class="arguments">&amp;REST PINS</code><code>)</code>  </header> <div class="docstring"><pre>Unexport the specified pins so that they can no longer be accessed from userspace.</pre></div> </article> </li></ul> </li><li class="package"> <h3> <a name="CL-GPIO" href="#CL-GPIO">CL-GPIO</a> <span class="nicknames">(GPIO ORG.SHIRAKUMO.GPIO)</span> </h3> <ul><li> <a name="CL-GPIO:PIN"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#CL-GPIO:PIN">PIN</a></code></h4>  </header> <div class="docstring"><pre>Representative type to encapsulate a GPIO pin.
 
 This will cache current pin properties. Note that it will
 not be updated automatically should changes to the pin
 occur from elsewhere in the system. Only updates done
 through this high-level interface will be tracked.
 
-See MAKE-PIN
-See ENSURE-PIN
-See NAME
-See CHIP
-See DIRECTION
-See EDGE
-See ACTIVE-LOW
-See VALUE</pre> </article> </li><li> <a name="CL-GPIO:ACTIVE-LOW"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#CL-GPIO:ACTIVE-LOW">ACTIVE-LOW</a></code></h4> <code class="qualifiers"></code> <code class="arguments">PIN</code><code>)</code>  </header> <pre class="docstring">Accesses the pin's I/O active-low.
+See <a href="NIL">MAKE-PIN</a>
+See <a href="#CL-GPIO:ENSURE-PIN">ENSURE-PIN</a>
+See <a href="#CL-GPIO:NAME">NAME</a>
+See <a href="#CL-GPIO:CHIP">CHIP</a>
+See <a href="#CL-GPIO-LLI:DIRECTION">DIRECTION</a>
+See <a href="#CL-GPIO-LLI:EDGE">EDGE</a>
+See <a href="#CL-GPIO-LLI:ACTIVE-LOW">ACTIVE-LOW</a>
+See <a href="#CL-GPIO-LLI:VALUE">VALUE</a></pre></div> </article> </li><li> <a name="CL-GPIO:ACTIVE-LOW"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#CL-GPIO:ACTIVE-LOW">ACTIVE-LOW</a></code></h4> <code class="qualifiers"></code> <code class="arguments">PIN</code><code>)</code>  </header> <div class="docstring"><pre>Accesses the pin's I/O active-low.
 
 If the pin does not yet exist or is not exported, it will be.
 The system GPIO's value is not adjusted if the cached value
 is already the same as the value attempted to be set with this.
 
-See ENSURE-PIN
-See CL-GPIO-LLI:ACTIVE-LOW
-See PIN-ACTIVE-LOW</pre> </article> </li><li> <a name="CL-GPIO:DIRECTION"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#CL-GPIO:DIRECTION">DIRECTION</a></code></h4> <code class="qualifiers"></code> <code class="arguments">PIN</code><code>)</code>  </header> <pre class="docstring">Accesses the pin's I/O direction.
+See <a href="#CL-GPIO:ENSURE-PIN">ENSURE-PIN</a>
+See <a href="#CL-GPIO-LLI:ACTIVE-LOW">CL-GPIO-LLI:ACTIVE-LOW</a>
+See <a href="NIL">PIN-ACTIVE-LOW</a></pre></div> </article> </li><li> <a name="CL-GPIO:DIRECTION"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#CL-GPIO:DIRECTION">DIRECTION</a></code></h4> <code class="qualifiers"></code> <code class="arguments">PIN</code><code>)</code>  </header> <div class="docstring"><pre>Accesses the pin's I/O direction.
 
 If the pin does not yet exist or is not exported, it will be.
 The system GPIO's value is not adjusted if the cached value
 is already the same as the value attempted to be set with this.
 
-See ENSURE-PIN
-See CL-GPIO-LLI:DIRECTION
-See PIN-DIRECTION</pre> </article> </li><li> <a name="CL-GPIO:EDGE"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#CL-GPIO:EDGE">EDGE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">PIN</code><code>)</code>  </header> <pre class="docstring">Accesses the pin's I/O edge.
+See <a href="#CL-GPIO:ENSURE-PIN">ENSURE-PIN</a>
+See <a href="#CL-GPIO-LLI:DIRECTION">CL-GPIO-LLI:DIRECTION</a>
+See <a href="NIL">PIN-DIRECTION</a></pre></div> </article> </li><li> <a name="CL-GPIO:EDGE"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#CL-GPIO:EDGE">EDGE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">PIN</code><code>)</code>  </header> <div class="docstring"><pre>Accesses the pin's I/O edge.
 
 If the pin does not yet exist or is not exported, it will be.
 The system GPIO's value is not adjusted if the cached value
 is already the same as the value attempted to be set with this.
 
-See ENSURE-PIN
-See CL-GPIO-LLI:EDGE
-See PIN-EDGE</pre> </article> </li><li> <a name="CL-GPIO:VALUE"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#CL-GPIO:VALUE">VALUE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">PIN</code><code>)</code>  </header> <pre class="docstring">Accesses the pin's I/O value.
+See <a href="#CL-GPIO:ENSURE-PIN">ENSURE-PIN</a>
+See <a href="#CL-GPIO-LLI:EDGE">CL-GPIO-LLI:EDGE</a>
+See <a href="NIL">PIN-EDGE</a></pre></div> </article> </li><li> <a name="CL-GPIO:VALUE"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#CL-GPIO:VALUE">VALUE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">PIN</code><code>)</code>  </header> <div class="docstring"><pre>Accesses the pin's I/O value.
 
 If the pin does not yet exist or is not exported, it will be.
 The pin's I/O direction is automatically adjusted if necessary
 depending on whether the value is read or set by setf.
 The value returned by this is never cached.
 
-See ENSURE-PIN
-See CL-GPIO-LLI:VALUE</pre> </article> </li><li> <a name="CL-GPIO:ALL-PINS"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#CL-GPIO:ALL-PINS">ALL-PINS</a></code></h4> <code class="qualifiers"></code> <code class="arguments"></code><code>)</code>  </header> <pre class="docstring">Returns a list of PIN instances for all pins on the system.
+See <a href="#CL-GPIO:ENSURE-PIN">ENSURE-PIN</a>
+See <a href="#CL-GPIO-LLI:VALUE">CL-GPIO-LLI:VALUE</a></pre></div> </article> </li><li> <a name="CL-GPIO:ALL-PINS"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#CL-GPIO:ALL-PINS">ALL-PINS</a></code></h4> <code class="qualifiers"></code> <code class="arguments"></code><code>)</code>  </header> <div class="docstring"><pre>Returns a list of PIN instances for all pins on the system.
 
-See CL-GPIO-LLI:AVAILABLE-PINS
-See ENSURE-PIN</pre> </article> </li><li> <a name="CL-GPIO:AWAIT-VALUE"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#CL-GPIO:AWAIT-VALUE">AWAIT-VALUE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">PIN &amp;OPTIONAL TIMEOUT</code><code>)</code>  </header> <pre class="docstring">Wait until the pin has a value that we can read.
+See <a href="#CL-GPIO-LLI:AVAILABLE-PINS">CL-GPIO-LLI:AVAILABLE-PINS</a>
+See <a href="#CL-GPIO:ENSURE-PIN">ENSURE-PIN</a></pre></div> </article> </li><li> <a name="CL-GPIO:AWAIT-VALUE"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#CL-GPIO:AWAIT-VALUE">AWAIT-VALUE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">PIN &amp;OPTIONAL TIMEOUT</code><code>)</code>  </header> <div class="docstring"><pre>Wait until the pin has a value that we can read.
 
 If TIMEOUT is specified and reached before a value becomes
 accessible, NIL is returned. Otherwise, true is returned.
@@ -142,7 +163,7 @@ accessible, NIL is returned. Otherwise, true is returned.
 This function is available on the following implementations:
  * SBCL
 
-See ENSURE-PIN</pre> </article> </li><li> <a name="CL-GPIO:CALL-WITH-PIN-HANDLER"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#CL-GPIO:CALL-WITH-PIN-HANDLER">CALL-WITH-PIN-HANDLER</a></code></h4> <code class="qualifiers"></code> <code class="arguments">FUNCTION HANDLER PIN &amp;OPTIONAL (EDGE NIL E-P) (ACTIVE-LOW NIL A-P)</code><code>)</code>  </header> <pre class="docstring">Make the HANDLER function be called if the PIN changes value during the evaluation of FUNCTION.
+See <a href="#CL-GPIO:ENSURE-PIN">ENSURE-PIN</a></pre></div> </article> </li><li> <a name="CL-GPIO:CALL-WITH-PIN-HANDLER"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#CL-GPIO:CALL-WITH-PIN-HANDLER">CALL-WITH-PIN-HANDLER</a></code></h4> <code class="qualifiers"></code> <code class="arguments">FUNCTION HANDLER PIN &amp;OPTIONAL (EDGE NIL E-P) (ACTIVE-LOW NIL A-P)</code><code>)</code>  </header> <div class="docstring"><pre>Make the HANDLER function be called if the PIN changes value during the evaluation of FUNCTION.
 
 The HANDLER is called with the corresponding PIN instance
 and the new value as arguments.
@@ -150,50 +171,29 @@ and the new value as arguments.
 This function is available on the following implementations:
  * SBCL
 
-See ENSURE-PIN
-See EDGE
-See ACTIVE-LOW</pre> </article> </li><li> <a name="CL-GPIO:CHIP"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#CL-GPIO:CHIP">CHIP</a></code></h4> <code class="qualifiers"></code> <code class="arguments">PIN</code><code>)</code>  </header> <pre class="docstring">Returns the pin's chip device name.
+See <a href="#CL-GPIO:ENSURE-PIN">ENSURE-PIN</a>
+See <a href="#CL-GPIO-LLI:EDGE">EDGE</a>
+See <a href="#CL-GPIO-LLI:ACTIVE-LOW">ACTIVE-LOW</a></pre></div> </article> </li><li> <a name="CL-GPIO:CHIP"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#CL-GPIO:CHIP">CHIP</a></code></h4> <code class="qualifiers"></code> <code class="arguments">PIN</code><code>)</code>  </header> <div class="docstring"><pre>Returns the pin's chip device name.
 
-See PIN-CHIP</pre> </article> </li><li> <a name="CL-GPIO:ENSURE-PIN"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#CL-GPIO:ENSURE-PIN">ENSURE-PIN</a></code></h4> <code class="qualifiers"></code> <code class="arguments">PIN &amp;OPTIONAL REFRESH</code><code>)</code>  </header> <pre class="docstring">Ensure to get a PIN instance in return.
+See <a href="NIL">PIN-CHIP</a></pre></div> </article> </li><li> <a name="CL-GPIO:ENSURE-PIN"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#CL-GPIO:ENSURE-PIN">ENSURE-PIN</a></code></h4> <code class="qualifiers"></code> <code class="arguments">PIN &amp;OPTIONAL REFRESH</code><code>)</code>  </header> <div class="docstring"><pre>Ensure to get a PIN instance in return.
 
 Accepts either a pin's name/id number or a pin instance.
 If REFRESH is true, a fresh PIN instance is returned
 that has its values taken from the system's GPIO values.
 
-See *PIN-CACHE*
-See MAKE-PIN
-See PIN</pre> </article> </li><li> <a name="CL-GPIO:EXPORT"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#CL-GPIO:EXPORT">EXPORT</a></code></h4> <code class="qualifiers"></code> <code class="arguments">&amp;REST PINS</code><code>)</code>  </header> <pre class="docstring">Export the specified pins and return a list of according PIN instances.
+See <a href="NIL">*PIN-CACHE*</a>
+See <a href="NIL">MAKE-PIN</a>
+See <a href="#CL-GPIO:PIN">PIN</a></pre></div> </article> </li><li> <a name="CL-GPIO:EXPORT"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#CL-GPIO:EXPORT">EXPORT</a></code></h4> <code class="qualifiers"></code> <code class="arguments">&amp;REST PINS</code><code>)</code>  </header> <div class="docstring"><pre>Export the specified pins and return a list of according PIN instances.
 
-See ENSURE-PIN
-See CL-GPIO-LLI:EXPORT-PIN</pre> </article> </li><li> <a name="CL-GPIO:NAME"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#CL-GPIO:NAME">NAME</a></code></h4> <code class="qualifiers"></code> <code class="arguments">PIN</code><code>)</code>  </header> <pre class="docstring">Returns the pin's name or ID.
+See <a href="#CL-GPIO:ENSURE-PIN">ENSURE-PIN</a>
+See <a href="#CL-GPIO-LLI:EXPORT-PIN">CL-GPIO-LLI:EXPORT-PIN</a></pre></div> </article> </li><li> <a name="CL-GPIO:NAME"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#CL-GPIO:NAME">NAME</a></code></h4> <code class="qualifiers"></code> <code class="arguments">PIN</code><code>)</code>  </header> <div class="docstring"><pre>Returns the pin's name or ID.
 
-See PIN-NAME</pre> </article> </li><li> <a name="CL-GPIO:PINS"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#CL-GPIO:PINS">PINS</a></code></h4> <code class="qualifiers"></code> <code class="arguments"></code><code>)</code>  </header> <pre class="docstring">Returns a list of available/exported PIN instances.
+See <a href="NIL">PIN-NAME</a></pre></div> </article> </li><li> <a name="CL-GPIO:PINS"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#CL-GPIO:PINS">PINS</a></code></h4> <code class="qualifiers"></code> <code class="arguments"></code><code>)</code>  </header> <div class="docstring"><pre>Returns a list of available/exported PIN instances.
 
-See CL-GPIO-LLI:EXPORTED-PINS
-See ENSURE-PIN</pre> </article> </li><li> <a name="CL-GPIO:UNEXPORT"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#CL-GPIO:UNEXPORT">UNEXPORT</a></code></h4> <code class="qualifiers"></code> <code class="arguments">&amp;REST PINS</code><code>)</code>  </header> <pre class="docstring">Unexport the specified pins and invalidate their cache.
+See <a href="#CL-GPIO-LLI:EXPORTED-PINS">CL-GPIO-LLI:EXPORTED-PINS</a>
+See <a href="#CL-GPIO:ENSURE-PIN">ENSURE-PIN</a></pre></div> </article> </li><li> <a name="CL-GPIO:UNEXPORT"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#CL-GPIO:UNEXPORT">UNEXPORT</a></code></h4> <code class="qualifiers"></code> <code class="arguments">&amp;REST PINS</code><code>)</code>  </header> <div class="docstring"><pre>Unexport the specified pins and invalidate their cache.
 
-See *PIN-CACHE*
-See CL-GPIO-LLI:UNEXPORT-PIN</pre> </article> </li><li> <a name="CL-GPIO:WITH-PIN-HANDLER"> </a> <article> <header class="macro"> <span class="type">macro</span>  <code>(</code><h4 class="name"><code><a href="#CL-GPIO:WITH-PIN-HANDLER">WITH-PIN-HANDLER</a></code></h4> <code class="qualifiers"></code> <code class="arguments">&amp;REST ARGS</code><code>)</code>  </header> <pre class="docstring">Shorthand to call a handler function on PIN value change during the evaluation of BODY.
+See <a href="NIL">*PIN-CACHE*</a>
+See <a href="#CL-GPIO-LLI:UNEXPORT-PIN">CL-GPIO-LLI:UNEXPORT-PIN</a></pre></div> </article> </li><li> <a name="CL-GPIO:WITH-PIN-HANDLER"> </a> <article> <header class="macro"> <span class="type">macro</span>  <code>(</code><h4 class="name"><code><a href="#CL-GPIO:WITH-PIN-HANDLER">WITH-PIN-HANDLER</a></code></h4> <code class="qualifiers"></code> <code class="arguments">(HANDLER PIN &amp;OPTIONAL EDGE ACTIVE-LOW) &amp;BODY BODY</code><code>)</code>  </header> <div class="docstring"><pre>Shorthand to call a handler function on PIN value change during the evaluation of BODY.
 
-See CALL-WITH-PIN-HANDLER</pre> </article> </li></ul> </li><li class="package"> <h3> <a name="CL-GPIO-LLI" href="#CL-GPIO-LLI">CL-GPIO-LLI</a> <span class="nicknames">(ORG.SHIRAKUMO.GPIO.LLI)</span> </h3> <ul><li> <a name="CL-GPIO-LLI:*GPIO-ROOT*"> </a> <article> <header class="special"> <span class="type">special</span>  <h4 class="name"><code><a href="#CL-GPIO-LLI:*GPIO-ROOT*">*GPIO-ROOT*</a></code></h4>  </header> <pre class="docstring">The root directory of the GPIO system devices.
-Should be /sys/class/gpio/</pre> </article> </li><li> <a name="CL-GPIO-LLI:ACTIVE-LOW"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#CL-GPIO-LLI:ACTIVE-LOW">ACTIVE-LOW</a></code></h4> <code class="qualifiers"></code> <code class="arguments">PIN</code><code>)</code>  </header> <pre class="docstring">Accessor to whether the GPIO pin has an active low.
-
-The value should be either NIL or T.</pre> </article> </li><li> <a name="CL-GPIO-LLI:DIRECTION"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#CL-GPIO-LLI:DIRECTION">DIRECTION</a></code></h4> <code class="qualifiers"></code> <code class="arguments">PIN</code><code>)</code>  </header> <pre class="docstring">Accessor to the GPIO pin's direction.
-
-The value should be either :IN or :OUT.</pre> </article> </li><li> <a name="CL-GPIO-LLI:EDGE"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#CL-GPIO-LLI:EDGE">EDGE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">PIN</code><code>)</code>  </header> <pre class="docstring">Accessor to the GPIO pin's interrupt edge.
-
-The value should be one of :NONE :RISING :FALLING :BOTH</pre> </article> </li><li> <a name="CL-GPIO-LLI:VALUE"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#CL-GPIO-LLI:VALUE">VALUE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">PIN</code><code>)</code>  </header> <pre class="docstring">Accessor to the GPIO pin's value.
-
-When reading, the pin's direction should be :IN
-When setting, the pin's direction should be :OUT
-
-The value should be either NIL or T.</pre> </article> </li><li> <a name="CL-GPIO-LLI:AVAILABLE-PINS"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#CL-GPIO-LLI:AVAILABLE-PINS">AVAILABLE-PINS</a></code></h4> <code class="qualifiers"></code> <code class="arguments"></code><code>)</code>  </header> <pre class="docstring">Return a list of all available GPIO pins on the system.
-
-Note that the pins are not necessarily accessible;
-they may need to be exported first.</pre> </article> </li><li> <a name="CL-GPIO-LLI:BASE"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#CL-GPIO-LLI:BASE">BASE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">CHIP</code><code>)</code>  </header> <pre class="docstring">Return the GPIO chip's base pin number.</pre> </article> </li><li> <a name="CL-GPIO-LLI:CHIP-FILE"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#CL-GPIO-LLI:CHIP-FILE">CHIP-FILE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">CHIP SUB</code><code>)</code>  </header> <pre class="docstring">Returns a file for the specified GPIO chip.
-
-See GPIO-FILE</pre> </article> </li><li> <a name="CL-GPIO-LLI:CHIP-PINS"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#CL-GPIO-LLI:CHIP-PINS">CHIP-PINS</a></code></h4> <code class="qualifiers"></code> <code class="arguments">CHIP</code><code>)</code>  </header> <pre class="docstring">Return a list of GPIO pin numbers on the chip.</pre> </article> </li><li> <a name="CL-GPIO-LLI:CHIPS"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#CL-GPIO-LLI:CHIPS">CHIPS</a></code></h4> <code class="qualifiers"></code> <code class="arguments"></code><code>)</code>  </header> <pre class="docstring">Returns a list of known GPIO chips.</pre> </article> </li><li> <a name="CL-GPIO-LLI:EXPORT-PIN"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#CL-GPIO-LLI:EXPORT-PIN">EXPORT-PIN</a></code></h4> <code class="qualifiers"></code> <code class="arguments">&amp;REST PINS</code><code>)</code>  </header> <pre class="docstring">Export the specified pins so that they may be accessed from userspace.</pre> </article> </li><li> <a name="CL-GPIO-LLI:EXPORTED-PINS"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#CL-GPIO-LLI:EXPORTED-PINS">EXPORTED-PINS</a></code></h4> <code class="qualifiers"></code> <code class="arguments"></code><code>)</code>  </header> <pre class="docstring">Returns a list of GPIO pins that are accessible.</pre> </article> </li><li> <a name="CL-GPIO-LLI:GPIO-FILE"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#CL-GPIO-LLI:GPIO-FILE">GPIO-FILE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">SUB</code><code>)</code>  </header> <pre class="docstring">Returns an absolute path to the requested gpio file.
-
-See *GPIO-ROOT*</pre> </article> </li><li> <a name="CL-GPIO-LLI:LABEL"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#CL-GPIO-LLI:LABEL">LABEL</a></code></h4> <code class="qualifiers"></code> <code class="arguments">CHIP</code><code>)</code>  </header> <pre class="docstring">Return the GPIO chip's label.</pre> </article> </li><li> <a name="CL-GPIO-LLI:NGPIO"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#CL-GPIO-LLI:NGPIO">NGPIO</a></code></h4> <code class="qualifiers"></code> <code class="arguments">CHIP</code><code>)</code>  </header> <pre class="docstring">Return the number of GPIO pins on the chip.</pre> </article> </li><li> <a name="CL-GPIO-LLI:PIN-FILE"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#CL-GPIO-LLI:PIN-FILE">PIN-FILE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">PIN SUB</code><code>)</code>  </header> <pre class="docstring">Returns a file for the specified GPIO pin.
-
-See GPIO-FILE</pre> </article> </li><li> <a name="CL-GPIO-LLI:UNEXPORT-PIN"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#CL-GPIO-LLI:UNEXPORT-PIN">UNEXPORT-PIN</a></code></h4> <code class="qualifiers"></code> <code class="arguments">&amp;REST PINS</code><code>)</code>  </header> <pre class="docstring">Unexport the specified pins so that they can no longer be accessed from userspace.</pre> </article> </li></ul> </li></ul> </article>  </main> </body> </html> 
+See <a href="#CL-GPIO:CALL-WITH-PIN-HANDLER">CALL-WITH-PIN-HANDLER</a></pre></div> </article> </li></ul> </li></ul> </article>  </main> </body> </html> 
