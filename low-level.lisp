@@ -34,7 +34,8 @@
                                   :element-type 'base-char)
        (write-to-file sequence stream)))
     (stream
-     (write-sequence sequence file))))
+     (write-sequence sequence file)
+     (finish-output file))))
 
 (defun read-from-file (file)
   (etypecase file
@@ -54,7 +55,8 @@
 
 (defun export-pin (&rest pins)
   (dolist (pin pins)
-    (write-to-file (princ-to-string pin) (gpio-file "export"))))
+    (write-to-file (princ-to-string pin) (gpio-file "export"))
+    (sleep 1)))
 
 (defun unexport-pin (&rest pins)
   (dolist (pin pins)
