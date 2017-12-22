@@ -30,7 +30,8 @@
      (write-to-file sequence (pathname file)))
     (pathname
      (with-open-file (stream file :direction :output
-                                  :if-exists :overwrite)
+                                  :if-exists :overwrite
+                                  :element-type 'base-char)
        (write-to-file sequence stream)))
     (stream
      (write-sequence sequence file))))
@@ -40,12 +41,13 @@
     (string (read-from-file (pathname file)))
     (pathname
      (with-open-file (stream file :direction :input
-                                  :if-does-not-exist :error)
+                                  :if-does-not-exist :error
+                                  :element-type 'base-char)
        (read-from-file stream)))
     (stream
      (string-trim '(#\Return #\Linefeed #\Space)
-      (with-output-to-string (out)
-        (let ((buffer (make-array 64 :element-type 'character)))
+      (with-output-to-string (out NIL :element-type 'base-char)
+        (let ((buffer (make-array 64 :element-type 'base-char)))
           (loop for size = (read-sequence buffer file)
                 until (= 0 size)
                 do (write-sequence buffer out :end size))))))))
