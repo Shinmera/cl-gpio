@@ -16,7 +16,8 @@
   (chip "" :type string :read-only T)
   (direction :in :type (member :in :out))
   (edge :none :type (member :none :rising :falling :both))
-  (active-low NIL :type boolean))
+  (active-low NIL :type boolean)
+  (value-stream NIL :read-only T))
 
 (defmethod print-object ((pin pin) stream)
   (print-unreadable-object (pin stream :type T)
@@ -27,13 +28,19 @@
     (cl-gpio-lli:export-pin pin))
   (unless (probe-file (cl-gpio-lli:pin-file pin ""))
     (error "No such pin ~d." pin))
-  (%make-pin :name pin
-             :chip (dolist (chip (cl-gpio-lli:chips) (princ-to-string chip))
-                     (when (<= 0 (- pin (cl-gpio-lli:base chip)) (cl-gpio-lli:ngpio chip))
-                       (return (cl-gpio-lli:label chip))))
-             :direction (cl-gpio-lli:direction pin)
-             :edge (cl-gpio-lli:edge pin)
-             :active-low (cl-gpio-lli:active-low pin)))
+  (let ((stream (open (cl-gpio-lli:pin-file pin "value")
+                      :direction :io
+                      :element-type '(unsigned-byte 8)
+                      :if-exists :overwrite
+                      :if-does-not-exist :error)))
+    (%make-pin :name pin
+               :chip (dolist (chip (cl-gpio-lli:chips) (princ-to-string chip))
+                       (when (<= 0 (- pin (cl-gpio-lli:base chip)) (cl-gpio-lli:ngpio chip))
+                         (return (cl-gpio-lli:label chip))))
+               :direction (cl-gpio-lli:direction pin)
+               :edge (cl-gpio-lli:edge pin)
+               :active-low (cl-gpio-lli:active-low pin)
+               :value-stream stream)))
 
 (defun ensure-pin (pin &optional refresh)
   (etypecase pin
@@ -56,11 +63,10 @@
 
 (defun unexport (&rest pins)
   (dolist (pin pins)
-    (let ((name (etypecase pin
-                  (integer pin)
-                  (pin (pin-name pin)))))
-      (cl-gpio-lli:unexport-pin name)
-      (remhash name *pin-cache*))))
+    (let ((pin (ensure-pin pin)))
+      (close (pin-value-stream pin))
+      (cl-gpio-lli:unexport-pin (pin-name pin))
+      (remhash (pin-name pin) *pin-cache*))))
 
 (defun name (pin)
   (pin-name (ensure-pin pin)))
@@ -101,15 +107,48 @@
            (setf (cl-gpio-lli:active-low (pin-name pin)) active-low)
            (setf (pin-active-low pin) active-low)))))
 
+(defun pin-value (pin)
+  (declare (optimize speed))
+  (declare (type pin pin))
+  (let ((stream (the stream (pin-value-stream pin))))
+    (unless (eql (pin-direction pin) :in)
+      (setf (cl-gpio-lli:direction (pin-name pin)) :in)
+      (setf (pin-direction pin) :in))
+    (file-position stream 0)
+    (code-char (read-byte stream))))
+
 (defun value (pin)
-  (let ((pin (ensure-pin pin)))
-    (setf (direction pin) :in)
-    (cl-gpio-lli:value (pin-name pin))))
+  (pin-value (ensure-pin pin)))
+
+(define-compiler-macro value (pin)
+  (let ((ping (gensym "PIN")))
+    `(let ((,ping ,pin))
+       (etypecase ,ping
+         (pin (pin-value ,ping))
+         (integer (pin-value (ensure-pin ,ping)))))))
+
+(defun (setf pin-value) (value pin)
+  (declare (optimize speed))
+  (declare (type pin pin))
+  (declare (type boolean value))
+  (let ((stream (the stream (pin-value-stream pin))))
+    (unless (eql (pin-direction pin) :out)
+      (setf (cl-gpio-lli:direction (pin-name pin)) :out)
+      (setf (pin-direction pin) :out))
+    (file-position stream 0)
+    (write-byte (if value (char-code #\1) (char-code #\0)) stream)
+    (finish-output stream)))
 
 (defun (setf value) (value pin)
-  (let ((pin (ensure-pin pin)))
-    (setf (direction pin) :out)
-    (setf (cl-gpio-lli:value (pin-name pin)) value)))
+  (declare (optimize speed))
+  (setf (pin-value (ensure-pin pin)) value))
+
+(define-compiler-macro (setf value) (value pin)
+  (let ((ping (gensym "PIN")))
+    `(let ((,ping ,pin))
+       (etypecase ,ping
+         (pin (setf (pin-value ,ping) ,value))
+         (integer (setf (pin-value (ensure-pin ,ping)) ,value))))))
 
 #+sbcl
 (defun await-value (pin &optional timeout)
