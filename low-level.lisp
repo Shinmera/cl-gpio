@@ -35,21 +35,37 @@
 
 (cffi:defcfun (cwrite "write") :int
   (stream :int)
-  (buffer :string)
+  (buffer :pointer)
   (length :uint))
 
 (cffi:defcfun (cread "read") :int
   (stream :int)
-  (buffer :string)
+  (buffer :pointer)
   (length :uint))
 
-(declaim (inline write-to-file))
-(defun write-to-file (sequence file)
-  (declare (type simple-string sequence file))
+(cffi:defcfun (getc "getc") :int
+  (stream :int))
+
+(declaim (inline %write-to-file))
+(defun %write-to-file (sequence length file)
+  (declare (type cffi:foreign-pointer sequence))
+  (declare (type simple-string file))
   (declare (optimize speed))
   (let ((fd (copen file 1)))
-    (cwrite fd sequence (length sequence))
+    (cwrite fd sequence length)
     (cclose fd)))
+
+(defun write-to-file (string file)
+  (cffi:with-foreign-string (sequence string)
+    (%write-to-file sequence (length string) file)))
+
+(define-compiler-macro write-to-file (&whole whole &environment env string file)
+  (if (constantp string env)
+      `(%write-to-file (load-time-value
+                        (cffi:foreign-string-alloc ,string))
+                       ,(length string)
+                       ,file)
+      whole))
 
 (declaim (inline read-from-file))
 (defun read-from-file (file)
@@ -61,6 +77,16 @@
          (cffi:with-foreign-object (buffer :uchar len)
            (cffi:foreign-string-to-lisp buffer :count (1- (the fixnum (cread fd buffer len)))))
       (cclose fd))))
+
+(declaim (inline read-byte-from-file))
+(defun read-byte-from-file (file)
+  (declare (type simple-string file))
+  (declare (optimize speed))
+  (let ((fd (copen file 0)))
+    (cffi:with-foreign-object (buffer :uchar)
+      (cread fd buffer 1)
+      (cclose fd)
+      (cffi:mem-ref buffer :uchar))))
 
 (defun export-pin (&rest pins)
   (dolist (pin pins)
@@ -105,29 +131,19 @@
 (defmacro define-pin-accessor (name file &rest values)
   `(progn
      (defun ,name (pin)
-       (let ((value (read-from-file (typecase pin
-                                      (stream pin)
-                                      (T (pin-file pin ,file))))))
+       (let ((value (read-from-file (pin-file pin ,file))))
          (cond ,@(loop for (string value) in values
                        collect `((string= value ,string) ,value))
                (T (error "Unexpected value in GPIO file: ~s" value)))))
      (defun (setf ,name) (value pin)
-       (write-to-file
-        (ecase value
-          ,@(loop for (string value) in values
-                  collect `((,value) ,string)))
-        (typecase pin
-          (stream pin)
-          (T (pin-file pin ,file))))
+       (ecase value
+         ,@(loop for (string value) in values
+                 collect `((,value) (write-to-file ,string (pin-file pin ,file)))))
        value)))
 
 (define-pin-accessor direction "direction"
   ("in" :in)
   ("out" :out))
-
-(define-pin-accessor value "value"
-  ("0" NIL)
-  ("1" T))
 
 (define-pin-accessor edge "edge"
   ("none" :none)
@@ -138,3 +154,13 @@
 (define-pin-accessor active-low "active_low"
   ("0" NIL)
   ("1" T))
+
+(defun value (pin)
+  (let ((value (read-byte-from-file (pin-file pin "value"))))
+    (= value (load-time-value (char-code #\1)))))
+
+(defun (setf value) (value pin)
+  (if value
+      (write-to-file "1" (pin-file pin "value"))
+      (write-to-file "0" (pin-file pin "value")))
+  value)
