@@ -8,7 +8,7 @@
 
 (in-package #:org.shirakumo.gpio.lli)
 
-(defvar *gpio-root* #p"/sys/class/gpio/")
+(defvar *gpio-root* "/sys/class/gpio/")
 
 (defun directory-name (pathname)
   (let ((directory (pathname-directory pathname)))
@@ -16,7 +16,9 @@
       (car (last directory)))))
 
 (defun gpio-file (sub)
-  (merge-pathnames sub *gpio-root*))
+  (let ((string (make-string (+ (length *gpio-root*) (length sub)) :element-type 'base-char)))
+    (replace string *gpio-root*)
+    (replace string sub :start1 (length *gpio-root*))))
 
 (defun pin-file (pin sub)
   (gpio-file (format NIL "gpio~a/~a" pin sub)))
@@ -24,34 +26,38 @@
 (defun chip-file (chip sub)
   (gpio-file (format NIL "gpiochip~a/~a" chip sub)))
 
+(cffi:defcfun (copen "open") :int
+  (filename :string)
+  (mode :int))
+
+(cffi:defcfun (cclose "close") :int
+  (stream :int))
+
+(cffi:defcfun (cwrite "write") :int
+  (stream :int)
+  (buffer :string)
+  (length :uint))
+
+(cffi:defcfun (cread "read") :int
+  (stream :int)
+  (buffer :string)
+  (length :uint))
+
 (defun write-to-file (sequence file)
-  (etypecase file
-    (string
-     (write-to-file sequence (pathname file)))
-    (pathname
-     (with-open-file (stream file :direction :output
-                                  :if-exists :overwrite
-                                  :element-type 'base-char)
-       (write-to-file sequence stream)))
-    (stream
-     (write-sequence sequence file)
-     (finish-output file))))
+  (declare (type simple-string sequence file))
+  (declare (optimize speed))
+  (let ((fd (copen file 1)))
+    (print (cwrite fd sequence (length sequence)))
+    (cclose fd)))
 
 (defun read-from-file (file)
-  (etypecase file
-    (string (read-from-file (pathname file)))
-    (pathname
-     (with-open-file (stream file :direction :input
-                                  :if-does-not-exist :error
-                                  :element-type 'base-char)
-       (read-from-file stream)))
-    (stream
-     (string-trim '(#\Return #\Linefeed #\Space)
-      (with-output-to-string (out NIL :element-type 'base-char)
-        (let ((buffer (make-array 64 :element-type 'base-char)))
-          (loop for size = (read-sequence buffer file)
-                until (= 0 size)
-                do (write-sequence buffer out :end size))))))))
+  (declare (type simple-string file))
+  (declare (optimize speed))
+  (let ((fd (copen file 0)))
+    (unwind-protect
+         (cffi:with-foreign-object (buffer :uchar 8)
+           (cffi:foreign-string-to-lisp buffer :count (1- (the (signed-byte 32) (cread fd buffer 8)))))
+      (cclose fd))))
 
 (defun export-pin (&rest pins)
   (dolist (pin pins)
