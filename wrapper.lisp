@@ -57,7 +57,6 @@
 (defun unexport (&rest pins)
   (dolist (pin pins)
     (let ((pin (ensure-pin pin)))
-      (close (pin-write-stream pin))
       (cl-gpio-lli:unexport-pin (pin-name pin))
       (remhash (pin-name pin) *pin-cache*))))
 
@@ -82,9 +81,6 @@
            direction)
           (T
            (setf (cl-gpio-lli:direction (pin-name pin)) direction)
-           (case direction
-             (:in (close (pin-write-stream pin)))
-             (:out (setf (pin-write-stream pin) (open-pin-stream (pin-name pin) direction))))
            (setf (pin-direction pin) direction)))))
 
 (defun (setf edge) (edge pin)
