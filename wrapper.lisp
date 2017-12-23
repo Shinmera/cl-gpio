@@ -16,8 +16,7 @@
   (chip "" :type string :read-only T)
   (direction :in :type (member :in :out))
   (edge :none :type (member :none :rising :falling :both))
-  (active-low NIL :type boolean)
-  (write-stream NIL))
+  (active-low NIL :type boolean))
 
 (defmethod print-object ((pin pin) stream)
   (print-unreadable-object (pin stream :type T)
@@ -34,17 +33,7 @@
                        (return (cl-gpio-lli:label chip))))
              :direction (cl-gpio-lli:direction pin)
              :edge (cl-gpio-lli:edge pin)
-             :active-low (cl-gpio-lli:active-low pin)
-             :write-stream (when (= :out (cl-gpio-lli:direction pin))
-                             (open-pin-stream pin :out))))
-
-(defun open-pin-stream (pin &optional (direction (cl-gpio-lli:direction pin)))
-  (open (cl-gpio-lli:pin-file pin "value")
-        :direction (case direction
-                     (:in :input) (:out :output))
-        :element-type '(unsigned-byte 8)
-        :if-exists :overwrite
-        :if-does-not-exist :error))
+             :active-low (cl-gpio-lli:active-low pin)))
 
 (defun ensure-pin (pin &optional refresh)
   (etypecase pin
@@ -82,7 +71,7 @@
   (pin-direction (ensure-pin pin)))
 
 (defun edge (pin)
-  (pin-edge (ensure-pin pin))),
+  (pin-edge (ensure-pin pin)))
 
 (defun active-low (pin)
   (pin-active-low (ensure-pin pin)))
@@ -119,9 +108,7 @@
   (declare (type pin pin))
   (unless (eql (pin-direction pin) :in)
     (setf (direction pin) :in))
-  (let ((stream (the stream (open-pin-stream (pin-name pin) :in))))
-    (unwind-protect (= (read-byte stream) (char-code #\1))
-      (close stream))))
+  (cl-gpio-lli:value (pin-name pin)))
 
 (defun value (pin)
   (pin-value (ensure-pin pin)))
@@ -139,10 +126,7 @@
   (declare (type boolean value))
   (unless (eql (pin-direction pin) :out)
     (setf (direction pin) :out))
-  (let ((stream (the stream (pin-write-stream pin))))
-    (file-position stream 0)
-    (write-byte (if value (char-code #\1) (char-code #\0)) stream)
-    (finish-output stream)))
+  (setf (cl-gpio-lli:value (pin-name pin)) value))
 
 (defun (setf value) (value pin)
   (declare (optimize speed))
