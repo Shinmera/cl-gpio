@@ -17,7 +17,7 @@
   (direction :in :type (member :in :out))
   (edge :none :type (member :none :rising :falling :both))
   (active-low NIL :type boolean)
-  (value-stream NIL))
+  (write-stream NIL))
 
 (defmethod print-object ((pin pin) stream)
   (print-unreadable-object (pin stream :type T)
@@ -35,7 +35,8 @@
              :direction (cl-gpio-lli:direction pin)
              :edge (cl-gpio-lli:edge pin)
              :active-low (cl-gpio-lli:active-low pin)
-             :value-stream (open-pin-stream pin)))
+             :write-stream (when (= :out (cl-gpio-lli:direction pin))
+                             (open-pin-stream pin :out))))
 
 (defun open-pin-stream (pin &optional (direction (cl-gpio-lli:direction pin)))
   (open (cl-gpio-lli:pin-file pin "value")
@@ -67,7 +68,7 @@
 (defun unexport (&rest pins)
   (dolist (pin pins)
     (let ((pin (ensure-pin pin)))
-      (close (pin-value-stream pin))
+      (close (pin-write-stream pin))
       (cl-gpio-lli:unexport-pin (pin-name pin))
       (remhash (pin-name pin) *pin-cache*))))
 
@@ -81,7 +82,7 @@
   (pin-direction (ensure-pin pin)))
 
 (defun edge (pin)
-  (pin-edge (ensure-pin pin)))
+  (pin-edge (ensure-pin pin))),
 
 (defun active-low (pin)
   (pin-active-low (ensure-pin pin)))
@@ -92,8 +93,9 @@
            direction)
           (T
            (setf (cl-gpio-lli:direction (pin-name pin)) direction)
-           (close (pin-value-stream pin))
-           (setf (pin-value-stream pin) (open-pin-stream (pin-name pin) direction))
+           (case direction
+             (:in (close (pin-write-stream pin)))
+             (:out (setf (pin-write-stream pin) (open-pin-stream (pin-name pin) direction))))
            (setf (pin-direction pin) direction)))))
 
 (defun (setf edge) (edge pin)
@@ -117,9 +119,9 @@
   (declare (type pin pin))
   (unless (eql (pin-direction pin) :in)
     (setf (direction pin) :in))
-  (let ((stream (the stream (pin-value-stream pin))))
-    (file-position stream 0)
-    (= (read-byte stream) (char-code #\1))))
+  (let ((stream (the stream (open-pin-stream (pin-name pin) :in))))
+    (unwind-protect (= (read-byte stream) (char-code #\1))
+      (close stream))))
 
 (defun value (pin)
   (pin-value (ensure-pin pin)))
@@ -137,7 +139,7 @@
   (declare (type boolean value))
   (unless (eql (pin-direction pin) :out)
     (setf (direction pin) :out))
-  (let ((stream (the stream (pin-value-stream pin))))
+  (let ((stream (the stream (pin-write-stream pin))))
     (file-position stream 0)
     (write-byte (if value (char-code #\1) (char-code #\0)) stream)
     (finish-output stream)))
