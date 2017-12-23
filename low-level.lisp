@@ -43,20 +43,23 @@
   (buffer :string)
   (length :uint))
 
+(declaim (inline write-to-file))
 (defun write-to-file (sequence file)
   (declare (type simple-string sequence file))
   (declare (optimize speed))
   (let ((fd (copen file 1)))
-    (print (cwrite fd sequence (length sequence)))
+    (cwrite fd sequence (length sequence))
     (cclose fd)))
 
+(declaim (inline read-from-file))
 (defun read-from-file (file)
   (declare (type simple-string file))
   (declare (optimize speed))
-  (let ((fd (copen file 0)))
+  (let ((fd (copen file 0))
+        (len 64))
     (unwind-protect
-         (cffi:with-foreign-object (buffer :uchar 8)
-           (cffi:foreign-string-to-lisp buffer :count (1- (the (signed-byte 32) (cread fd buffer 8)))))
+         (cffi:with-foreign-object (buffer :uchar len)
+           (cffi:foreign-string-to-lisp buffer :count (1- (the fixnum (cread fd buffer len)))))
       (cclose fd))))
 
 (defun export-pin (&rest pins)
@@ -106,7 +109,7 @@
                                       (stream pin)
                                       (T (pin-file pin ,file))))))
          (cond ,@(loop for (string value) in values
-                       collect `((equal value ,string) ,value))
+                       collect `((string= value ,string) ,value))
                (T (error "Unexpected value in GPIO file: ~s" value)))))
      (defun (setf ,name) (value pin)
        (write-to-file
