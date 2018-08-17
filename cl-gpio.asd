@@ -10,7 +10,9 @@
   :author "Nicolas Hafner <shinmera@tymoon.eu>"
   :maintainer "Nicolas Hafner <shinmera@tymoon.eu>"
   :description "A library for the Linux GPIO kernel module as used on hobby kits such as the Raspberry Pi"
-  :homepage "https://github.com/Shinmera/cl-gpio"
+  :homepage "https://Shinmera.github.io/cl-gpio/"
+  :bug-tracker "https://github.com/Shinmera/cl-gpio/issues"
+  :source-control (:git "https://github.com/Shinmera/cl-gpio.git")
   :serial T
   :components ((:file "package")
                (:file "low-level")
