@@ -51,6 +51,6 @@ Or even install handlers:
 
 Naturally you'll have to refer to your particular board/system's specification to be able to tell which pins are supposed to be used for what. For the Raspberry Pi 2/3/4, it would be:
 
-![rpi234-pin-mapping](https://pinout.xyz/#)
+![rpi234-pin-mapping](https://raw.githubusercontent.com/Gadgetoid/Pinout.xyz/master/resources/raspberry-pi-pinout.png)
 
 ([Source](https://developer.microsoft.com/en-us/windows/iot/docs/pinmappingsrpi))
