@@ -6,6 +6,26 @@ Enumerate a list of all available GPIO pins on your system:
 
     (gpio:pins)
 
+If you have GPIO pins on your system and GPIO:PINS returns NIL, then try to export them first:
+
+	;; Replace 26 with how many pins you have:
+	(loop for i from 0 to 26
+		  do (gpio:export i))
+
+GPIO:PINS should now return the pins' statuses:
+
+	(gpio:pins) =>
+
+	(#<CL-GPIO:PIN 0 :OUT> #<CL-GPIO:PIN 1 :IN> #<CL-GPIO:PIN 10 :IN>
+	#<CL-GPIO:PIN 11 :IN> #<CL-GPIO:PIN 12 :IN> #<CL-GPIO:PIN 13 :IN>
+	#<CL-GPIO:PIN 14 :IN> #<CL-GPIO:PIN 15 :IN> #<CL-GPIO:PIN 16 :IN>
+	#<CL-GPIO:PIN 17 :IN> #<CL-GPIO:PIN 18 :IN> #<CL-GPIO:PIN 19 :IN>
+	#<CL-GPIO:PIN 2 :IN> #<CL-GPIO:PIN 20 :IN> #<CL-GPIO:PIN 21 :IN>
+	#<CL-GPIO:PIN 22 :IN> #<CL-GPIO:PIN 23 :IN> #<CL-GPIO:PIN 24 :IN>
+	#<CL-GPIO:PIN 25 :IN> #<CL-GPIO:PIN 26 :IN> #<CL-GPIO:PIN 3 :IN>
+	#<CL-GPIO:PIN 4 :IN> #<CL-GPIO:PIN 5 :IN> #<CL-GPIO:PIN 6 :IN>
+	#<CL-GPIO:PIN 7 :IN> #<CL-GPIO:PIN 8 :IN> #<CL-GPIO:PIN 9 :IN>)
+	
 You can then access the direction, edge, and active-low of each pin:
 
     (setf (gpio:direction 0) :out)
@@ -29,8 +49,8 @@ Or even install handlers:
       (format T "Waiting for a change on 0...")
       (loop (sleep 0.001)))
 
-Naturally you'll have to refer to your particular board/system's specification to be able to tell which pins are supposed to be used for what. For the Raspberry Pi 2/3, it would be:
+Naturally you'll have to refer to your particular board/system's specification to be able to tell which pins are supposed to be used for what. For the Raspberry Pi 2/3/4, it would be:
 
-![rpi23-pin-mapping](https://az835927.vo.msecnd.net/sites/iot/Resources/images/PinMappings/RP2_Pinout.png)
+![rpi234-pin-mapping](https://pinout.xyz/#)
 
 ([Source](https://developer.microsoft.com/en-us/windows/iot/docs/pinmappingsrpi))
