@@ -1,9 +1,3 @@
-#|
- This file is a part of cl-gpio
- (c) 2016 Shirakumo http://tymoon.eu (shinmera@tymoon.eu)
- Author: Nicolas Hafner <shinmera@tymoon.eu>
-|#
-
 ;; See https://www.kernel.org/doc/Documentation/gpio/sysfs.txt
 
 (in-package #:org.shirakumo.gpio.lli)
